@@ -172,7 +172,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--link);outline-o
 <div class="wrap">
   <div class="guide">
     <h1>Nanny Report prototype</h1>
-    <p>Click through the new report. Squad v1 (1-week build): adds Drink + Eat cards and a tip-first insight to the current report. Compared with the 7-day average only.</p>
+    <p>Click through the new report. Squad v1 (1-week build): adds Drink + Eat cards and a tip-first insight to the current report. Compared with the 7-day average and with other Maltipoos, with today's clips.</p>
     <div class="ctl">
       <h2>View as</h2>
       <div class="seg" role="group" aria-label="Plan">
@@ -440,8 +440,18 @@ function detail(){
     <div class="xl">${S.range===7?["T","F","S","S","M","T","Today"].map(x=>`<span>${x}</span>`).join(""):"<span>Sep 17</span><span>Oct 1</span><span>Today</span>"}</div>
     ${S.range===30?`<div class="later">30-day view is planned for a later phase.</div>`:""}
   </div>
-  <button class="link" data-go="vh">▶ Watch today's ${e.n.toLowerCase()} clips in Video History <span>→</span></button>
+  ${["eat","drink"].includes(S.ev)?`<div class="card" style="margin-top:12px"><div style="display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px;margin-bottom:8px">Today's ${e.n.toLowerCase()} clips <span class="muted" style="font-weight:400">Tap to check detection</span></div>
+    <div class="hl">${(S.ev==="drink"?["8:14 AM","11:02 AM","1:40 PM"]:["8:05 AM","6:10 PM"]).map(t=>`<div style="flex:1;min-width:0"><div class="vid" data-act="toast" data-msg="Plays the ${t} ${e.n.toLowerCase()} clip"><span class="play"></span></div><div class="muted" style="margin-top:4px;text-align:center">${t}</div></div>`).join("")}</div></div>`:""}
+  <button class="link" data-go="vh">▶ See all ${e.n.toLowerCase()} clips in Video History <span>→</span></button>
   ${["eat","drink"].includes(S.ev)?`<div class="tip">Bowl not in view? Move Furbo so the bowl is visible.</div>`:""}
+  ${["eat","drink"].includes(S.ev)?(isPrem()?`<div class="prem"><div class="hd">${cmpTitle} <span class="tag">✦ PREMIUM</span></div>
+      <div style="font-size:13px;line-height:1.45;margin-bottom:4px"><b>${sum}</b></div>
+      ${rows.map(([lbl,grp,pos,txt])=>`<div class="bm"><div class="r"><span>${lbl}</span><span>${txt}</span></div>
+        <div class="muted" style="font-size:11px">${grp} · this week</div>
+        <div class="track"><span class="mid"></span><i style="left:${Math.max(4,Math.min(96,(pos+40)/80*100))}%"></i></div>
+        <div class="sl"><span>Less</span><span>Typical</span><span>More</span></div></div>`).join("")}</div>`
+    : lockedBox(cmpTitle, rows.map(([lbl])=>`<div class="bm"><div class="r"><span>${lbl}</span><span>??% vs. avg</span></div><div class="track"><span class="mid"></span><i style="left:50%"></i></div></div>`).join(""),
+      `See how ${P.name} compares with other Maltipoos.`)):""}
   ${e.warn?`<div class="ins" style="margin-top:12px"><h4>Nanny tip</h4><div style="font-weight:700;color:#000">${e.sug}</div></div>`:""}`;
 }
 
