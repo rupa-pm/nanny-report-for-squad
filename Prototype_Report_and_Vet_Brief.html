@@ -3,7 +3,7 @@
 <title>Nanny Report · Squad Prototype</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap">
 <style>
-/* Layout: guide panel on the left, one interactive phone on the right; stacks on narrow screens. Single light look by choice (the app itself is light). */
+/* Layout: one interactive phone; the flow starts from a lock-screen push (like the Weekly Tips prototype). Single light look by choice (the app itself is light). */
 :root{
   --page:#EFECE6; --cream:#FBF9F5; --card:#FFFFFF; --ink:#434343; --ink2:#7a7570; --line:#E3DED6;
   --yellow:#F7CD3D; --y10:#FEF6DC; --warn:#E8962A; --prem:#6D5BEF; --link:#2F6FDE; --ai:linear-gradient(120deg,#4F8BF5 0%,#7B61F2 55%,#B36BF0 100%); --lockbg:#EEECE9; --lockink:#8F8A84;
@@ -167,39 +167,54 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--link);outline-o
 .home svg{width:10px;height:10px}
 .homenote{display:flex;gap:8px;align-items:flex-start;background:#F2F0EC;border-radius:12px;padding:9px 10px;font-size:12px;line-height:1.4;color:#5f5a55;margin-bottom:10px}
 .homenote svg{flex:none;width:16px;height:16px;margin-top:1px}
+
+.wrap{flex-direction:column;align-items:center;gap:16px}
+.bar{display:flex;gap:8px;align-items:center;font-size:13px;color:#666}
+.bar button{font:500 13px var(--font);border:1px solid #ccc;background:#fff;border-radius:999px;padding:7px 14px;cursor:pointer;color:var(--ink)}
+.phone{height:812px!important}
+/* lock screen push */
+.lockv{position:absolute;inset:0;z-index:20;background:#3d3027;color:#fff;overflow:hidden;transition:opacity .35s,transform .35s}
+.lockv.hide{opacity:0;pointer-events:none;transform:scale(.98)}
+.lockv .wall{position:absolute;inset:-30px;background:url(assets/live.jpg) center/cover;filter:blur(18px) brightness(.72) saturate(1.1)}
+.lockv .status{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 26px 0 32px;font-weight:700;font-size:16px;position:relative;z-index:2}
+.lockv .status .ic{display:flex;gap:6px;align-items:center}
+.lockv .date{position:relative;text-align:center;font-size:19px;font-weight:500;margin-top:18px;opacity:.95}
+.lockv .clock{position:relative;text-align:center;font-size:86px;font-weight:500;letter-spacing:-2px;line-height:1;margin-top:2px}
+.notif{position:absolute;left:12px;right:12px;top:300px;background:rgba(245,242,238,.88);backdrop-filter:blur(20px);color:#2b2b2b;border-radius:22px;padding:13px 15px 14px;cursor:pointer;transition:transform .45s cubic-bezier(.2,.9,.3,1.2),opacity .3s}
+.notif.pre{transform:translateY(-40px);opacity:0}
+.notif .nh{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.notif .appic{width:38px;height:38px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none}
+.notif .appic img{width:34px}
+.notif .nt{flex:1;min-width:0}
+.notif .an{display:flex;justify-content:space-between;font-size:14px;font-weight:700}
+.notif .an span{font-weight:400;color:#7d7873;font-size:13px}
+.n-obs{font-size:14px;line-height:1.35;color:#3a3a3a}
+.n-tip{font-size:15px;font-weight:700;line-height:1.35;margin-top:2px}
+.lockv .hint{position:absolute;left:0;right:0;bottom:118px;text-align:center;font-size:13px;opacity:.75}
+.lockv .lockbar{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:#fff}
+body.static .bar,body.static .lockv .hint{display:none}
 </style>
 
 <div class="wrap">
-  <div class="guide">
-    <h1>Nanny Report prototype</h1>
-    <p>Click through the new report. Squad v1 (1-week build): adds Drink + Eat cards and a tip-first insight to the current report. Compared with the 7-day average and with other Maltipoos, with today's clips.</p>
-    <div class="ctl">
-      <h2>View as</h2>
-      <div class="seg" role="group" aria-label="Plan">
-        <button id="planStd" type="button">Standard</button>
-        <button id="planPrem" type="button" class="on">Premium</button>
-      </div>
+  <div class="bar"><button id="restart" type="button">↺ Restart</button><span>Tap the notification, then explore the report</span></div>
+  <div class="phone" id="phone"><div class="screen" id="screen"></div>
+  <section class="lockv" id="lock">
+    <div class="wall"></div>
+    <div class="status"><span>9:41</span><span class="ic">
+      <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="#fff"/><rect x="5" y="5" width="3" height="7" rx="1" fill="#fff"/><rect x="10" y="2.5" width="3" height="9.5" rx="1" fill="#fff"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#fff"/></svg>
+      <svg width="26" height="12" viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="#fff" opacity=".5"/><rect x="2" y="2" width="19" height="8" rx="2" fill="#fff"/><rect x="24" y="4" width="2" height="4" rx="1" fill="#fff" opacity=".5"/></svg></span></div>
+    <div class="date">Wednesday, October 16</div>
+    <div class="clock">9:41</div>
+    <div class="notif pre" id="notif" role="button" tabindex="0" aria-label="Open Furbo notification">
+      <div class="nh"><div class="appic"><img src="assets/nanny.png" alt=""></div>
+        <div class="nt"><div class="an">Furbo Nanny <span>now</span></div>
+          <div class="n-obs">Archie drank 3 times today. He usually drinks 4–5 times.</div></div></div>
+      <div class="n-tip">Tip: Add a 2nd water bowl near his bed 💧</div>
     </div>
-    <div class="ctl">
-      <h2>Legend</h2>
-      <div class="legend">
-        <span><i class="sw"></i>All Nanny users</span>
-        <span><i class="sw p"></i><span class="tag" style="margin-right:2px">✦ PREMIUM</span>Premium users see this</span>
-        <span><i class="sw l"></i><span class="lockpill">LOCKED</span>Standard users see this greyed out</span>
-        <span><i class="new" style="margin:0">NEW</i>Not yet in the production app</span>
-      </div>
-    </div>
-    <div class="ctl">
-      <h2>Things to try</h2>
-      <ol class="try">
-                        <li>Tap Drink or Eat to see the 7-day trend</li>
-        <li>Open the clips in Video History</li>
-        <li>Add a note, then generate a Vet Brief</li>
-        <li>Switch to Standard to see what's locked</li>
-      </ol>
-    </div>
+    <div class="hint">Tap the notification</div>
+    <div class="lockbar"></div>
+  </section>
   </div>
-  <div class="phone" id="phone"><div class="screen" id="screen"></div></div>
 </div>
 
 <script>
@@ -288,13 +303,13 @@ const SELFP = {
 // Premium: comparison groups picked per event and per pet
 const pctTxt = (ev, v)=> ev==="vomit" ? `${v}% had one this week` : (v>=1 ? `${v}% more` : (v<=-1 ? `${-v}% less` : "Same as typical"));
 const GP = {
-  archie:{ breedAge:["Same breed & age","640 Maltipoos aged 2–4"], age:["Same age","2,310 dogs aged 2–4"], breed:["Other Maltipoos","1,180 Maltipoos on Furbo"],
+  archie:{ breedAge:["Same breed & age","640 Maltipoos aged 2–4"], age:["Dogs his age","2,310 dogs aged 2–4 on Furbo"], breed:["Other Maltipoos","1,180 Maltipoos on Furbo"],
     size:["Same size","4,050 dogs weighing 5–9 kg"], alone:["Same time home alone","3,200 dogs alone 6–8 hrs a day"], weather:["Same local weather","Dogs in your area this week (warm days)"] },
   teddy:{ breedAge:["Mixed-breed cats, same age","1,240 mixed-breed cats aged 2–4"], age:["Same age","3,050 cats aged 2–4"], breed:["Mixed-breed cats","6,800 mixed-breed cats, all ages"],
     size:["Same size","2,780 cats weighing 4–5 kg"], alone:["Same time home alone","1,900 cats alone 6–8 hrs a day"], weather:["Same local weather","Cats in your area this week (warm days)"] },
 };
 const BENCHP = {  // [group, % difference vs. group average] (vomit: % of group with one this week)
-  archie:{ activity:[["breed",3]], eat:[["breed",1]], drink:[["breed",-22]], potty:[["breed",2]], vomit:[["breed",3]] },
+  archie:{ activity:[["breed",3],["age",5]], eat:[["breed",1],["age",-2]], drink:[["breed",-22],["age",-18]], potty:[["breed",2]], vomit:[["breed",3]] },
   teddy:{ activity:[["breedAge",5],["age",8],["size",3],["alone",1]],
     eat:[["breedAge",0],["size",2],["age",-3]], drink:[["breedAge",4],["size",2],["age",6],["weather",-1]],
     potty:[["breedAge",1],["age",3],["size",-2]], vomit:[["breedAge",12],["age",10],["size",11]] },
@@ -307,8 +322,8 @@ const HOMESUM = {
   meow:"Your home meows 9% more than other homes with a dog and a cat, mostly in the evening. That's a common time for play or dinner requests." };
 const SUMP = {
   archie:{ activity:"Archie is 3% more active than other Maltipoos.",
-    eat:"Archie eats within 1% of other Maltipoos.",
-    drink:"Archie drank 22% less than other Maltipoos this week. Keep an eye on it.",
+    eat:"Archie eats within 2% of other Maltipoos and dogs his age.",
+    drink:"Archie drank 22% less than other Maltipoos and 18% less than dogs his age this week. Keep an eye on it.",
     potty:"Archie's potty breaks are within 2% of other Maltipoos.",
     vomit:"About 3% of Maltipoos vomited this week. Archie had none." },
   teddy:{ activity:"Teddy is 5% more active than mixed-breed cats his age, and 8% more than cats his age overall.",
@@ -433,7 +448,16 @@ function detail(){
   return `<div class="top"><button class="back" data-go="home">‹ ${title}</button></div>
   ${(!snd && S.pet==="all") ? petSwitch() : ""}
   <div class="tabs">${ORDER.map(k=>`<button class="chip ${S.ev===k?"on":""}" data-tab="${k}">${isSnd(k)?SOUND[k].n:EVP.archie[k].n}</button>`).join("")}</div>
-  
+
+  ${e.warn?`<div class="ins" style="margin:0 0 12px"><h4>Nanny tip</h4><div style="font-weight:700;color:#000">${e.sug}</div></div>`:""}
+  ${["eat","drink"].includes(S.ev)?(isPrem()?`<div class="prem" style="margin:0 0 12px"><div class="hd">${cmpTitle} <span class="tag">✦ PREMIUM</span></div>
+      <div style="font-size:13px;line-height:1.45;margin-bottom:4px"><b>${sum}</b></div>
+      ${rows.map(([lbl,grp,pos,txt])=>`<div class="bm"><div class="r"><span>${lbl}</span><span>${txt}</span></div>
+        <div class="muted" style="font-size:11px">${grp} · this week</div>
+        <div class="track"><span class="mid"></span><i style="left:${Math.max(4,Math.min(96,(pos+40)/80*100))}%"></i></div>
+        <div class="sl"><span>Less</span><span>Typical</span><span>More</span></div></div>`).join("")}</div>`
+    : lockedBox(cmpTitle, rows.map(([lbl])=>`<div class="bm"><div class="r"><span>${lbl}</span><span>??% vs. avg</span></div><div class="track"><span class="mid"></span><i style="left:50%"></i></div></div>`).join(""),
+      `See how ${P.name} compares with other Maltipoos and dogs his age.`)):""}
     <div class="card">
     <div class="big">${e.today}${e.unit} <span class="muted" style="font-size:13px;font-weight:400">today · 7-day avg ${e.avg}${e.unit}</span>${e.warn?`<div style="font-size:13px;font-weight:700;color:var(--warn);margin-top:2px">${e.s}</div>`:""}</div>
     ${S.range===7?bars(e,true):bars30(e)}
@@ -444,15 +468,7 @@ function detail(){
     <div class="hl">${(S.ev==="drink"?["8:14 AM","11:02 AM","1:40 PM"]:["8:05 AM","6:10 PM"]).map(t=>`<div style="flex:1;min-width:0"><div class="vid" data-act="toast" data-msg="Plays the ${t} ${e.n.toLowerCase()} clip"><span class="play"></span></div><div class="muted" style="margin-top:4px;text-align:center">${t}</div></div>`).join("")}</div></div>`:""}
   <button class="link" data-go="vh">▶ See all ${e.n.toLowerCase()} clips in Video History <span>→</span></button>
   ${["eat","drink"].includes(S.ev)?`<div class="tip">Bowl not in view? Move Furbo so the bowl is visible.</div>`:""}
-  ${["eat","drink"].includes(S.ev)?(isPrem()?`<div class="prem"><div class="hd">${cmpTitle} <span class="tag">✦ PREMIUM</span></div>
-      <div style="font-size:13px;line-height:1.45;margin-bottom:4px"><b>${sum}</b></div>
-      ${rows.map(([lbl,grp,pos,txt])=>`<div class="bm"><div class="r"><span>${lbl}</span><span>${txt}</span></div>
-        <div class="muted" style="font-size:11px">${grp} · this week</div>
-        <div class="track"><span class="mid"></span><i style="left:${Math.max(4,Math.min(96,(pos+40)/80*100))}%"></i></div>
-        <div class="sl"><span>Less</span><span>Typical</span><span>More</span></div></div>`).join("")}</div>`
-    : lockedBox(cmpTitle, rows.map(([lbl])=>`<div class="bm"><div class="r"><span>${lbl}</span><span>??% vs. avg</span></div><div class="track"><span class="mid"></span><i style="left:50%"></i></div></div>`).join(""),
-      `See how ${P.name} compares with other Maltipoos.`)):""}
-  ${e.warn?`<div class="ins" style="margin-top:12px"><h4>Nanny tip</h4><div style="font-weight:700;color:#000">${e.sug}</div></div>`:""}`;
+`;
 }
 
 function selfCard(who, k){
@@ -535,15 +551,17 @@ function render(){
   $("#phone").querySelectorAll(".sheetbg,.toast").forEach(n=>n.remove());
   if(S.sheet) $("#phone").insertAdjacentHTML("beforeend", sheet());
   if(S.toast) $("#phone").insertAdjacentHTML("beforeend", `<div class="toast">${esc(S.toast)}</div>`);
-  $("#planStd").classList.toggle("on",!isPrem()); $("#planPrem").classList.toggle("on",isPrem());
 }
 function go(scr){ S.screen=scr; S.sheet=null; render(); $("#screen").scrollTop=0; }
 let tt; function toast(m){ S.toast=m; render(); clearTimeout(tt); tt=setTimeout(()=>{S.toast="";render();},1600); }
 function addNote(id){ const el=document.getElementById(id); const t=(el&&el.value||"").trim(); if(!t){ toast("Type a note first"); return; }
   const p = logPet(); S.notes[p].unshift({d:"Oct 16", t}); toast(`Note saved to ${PET[p].name}'s health log`); }
 
-$("#planStd").onclick=()=>{S.plan="std"; if(["log","brief"].includes(S.screen)) S.screen="home"; render();};
-$("#planPrem").onclick=()=>{S.plan="prem"; render();};
+function openReport(){ S.ev="drink"; go("detail"); $("#lock").classList.add("hide"); requestAnimationFrame(()=>{ $("#screen").scrollTop=0; }); }
+function resetFlow(){ S.sheet=null; S.screen="home"; render(); $("#lock").classList.remove("hide"); $("#notif").classList.add("pre"); setTimeout(()=>$("#notif").classList.remove("pre"),600); }
+$("#notif").addEventListener("click",openReport);
+$("#notif").addEventListener("keydown",e=>{ if(e.key==="Enter") openReport(); });
+$("#restart").onclick=resetFlow;
 
 $("#phone").addEventListener("click",(ev)=>{
   const exb=ev.target.closest("[data-ex]");
@@ -577,15 +595,18 @@ $("#phone").addEventListener("keydown",(ev)=>{ if(ev.key==="Enter"&&ev.target.id
 render();
 // Static modes for slide screenshots
 (function(){
-  const m=(location.hash||"").slice(1); if(!m) return;
+  const m=(location.hash||"").slice(1); if(!m){ resetFlow(); return; }
   document.body.classList.add("static");
   const st=document.createElement("style");
   st.textContent=`body.static{background:#fff!important}body.static .wrap{padding:0!important;display:block!important}body.static .guide{display:none!important}
   body.static .phone{border:0!important;border-radius:0!important;box-shadow:none!important;width:375px!important;height:812px!important}`;
   document.head.appendChild(st);
   const sc=$("#screen");
+  if(m==="push"){ $("#notif").classList.remove("pre"); return; }
+  $("#lock").classList.add("hide");
   if(m==="home"){ render(); sc.scrollTop=$("#health").offsetTop-12; }
   if(m==="detail"){ S.ev="drink"; go("detail"); }
+  if(m==="detailfull"){ S.ev="drink"; go("detail"); $("#phone").style.setProperty("height",(sc.scrollHeight+4)+"px","important"); }
   if(m==="detail2"){ S.ev="drink"; go("detail"); sc.scrollTop=sc.scrollHeight; }
   if(m==="vetcard"){ render(); sc.scrollTop=sc.scrollHeight; }
   if(m==="log"){ go("log"); S.sheet="period"; render(); }
